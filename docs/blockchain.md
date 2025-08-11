@@ -92,21 +92,184 @@ Instead of a single blockchain, there are many copies (peers: A, B, C, etc.). If
 
 ---
 
-### The Oracle Problem
+### Oracles
 
-A well-known limitation of blockchain technology is the "oracle problem." Blockchains are intentionally isolated networks—think of them as computers with no internet access. This isolation is a core part of blockchain security, preventing unauthorized data from entering or leaving the system. However, it also means that blockchains cannot directly access external (off-chain) data or interact with outside systems.
+#### What is an Oracle?
 
-To bridge this gap, specialized infrastructure called oracles is used. Oracles securely connect on-chain smart contracts with off-chain data sources, enabling blockchains to "pull" or "push" information to and from the outside world. The reliability and security of these oracles are critical, as they become the trust anchor for any external data used on-chain. The oracle problem highlights the challenge of maintaining blockchain security while enabling access to real-world information.
+An **oracle** is a system that provides external (off-chain) data to blockchain smart contracts. Since blockchains are intentionally isolated for security and consensus, they cannot directly access real-world information (e.g., prices, weather, randomness, events). Oracles act as bridges, feeding trusted data into smart contracts.
+
+#### Why Oracles Are Needed
+
+- **Determinism:** The Ethereum Virtual Machine (EVM) must be deterministic—every node must reach the same result given the same inputs. This means no native randomness or external data can be accessed during contract execution.
+- **External Data:** Many applications (DeFi, insurance, gaming, supply chain, prediction markets) require real-world data (e.g., asset prices, weather, sports results, random numbers).
+- **Solution:** Oracles inject this data into the blockchain, enabling smart contracts to react to real-world events.
+
+#### Oracle Use Cases
+
+- Price feeds (e.g., ETH/USD rates for DeFi)
+- Randomness for games and lotteries
+- Weather data for insurance contracts
+- Sports and event outcomes for prediction markets
+- Identity and attestation (e.g., academic certificates)
+- Supply chain tracking (e.g., geolocation, damage verification)
+- Cross-chain data (e.g., bridging assets between blockchains)
+- Time and interval data for scheduled actions
+
+#### Oracle Design Patterns
+
+Oracles can be implemented in several ways:
+- **Immediate-read:** Store data on-chain for direct lookup (e.g., age verification, static identifiers).
+- **Publish-subscribe:** Regularly update data on-chain; subscribers poll or listen for updates (e.g., price feeds, weather).
+- **Request-response:** On-demand data retrieval; a contract requests data, and the oracle responds asynchronously (e.g., large datasets, custom queries).
+
+*Note:* Oracles can be human, software, or hardware (e.g., IoT sensors).
+
+#### Data Authentication
+
+Oracles must prove that the data they provide is authentic and untampered:
+- **Authenticity proofs:** Cryptographic signatures or attestations (e.g., TLSNotary, Oraclize) prove data integrity.
+- **Trusted Execution Environments (TEEs):** Hardware-based secure enclaves (e.g., Intel SGX, Town Crier) ensure data is processed securely and can be attested.
+- **Best Practice:** Always verify the source and integrity of oracle data, as compromised oracles can undermine contract security.
+
+#### Computation Oracles
+
+Oracles can also perform off-chain computation that is too expensive or slow for on-chain execution:
+- **Centralized computation oracles:** Services like Oraclize run computations in secure, auditable environments (e.g., AWS, Docker).
+- **Decentralized computation oracles:** Protocols like TrueBit use networks of solvers and verifiers to perform and check computations, with on-chain dispute resolution.
+
+#### Decentralized Oracles
+
+Centralized oracles are single points of failure. Decentralized oracles aggregate data from multiple sources and use consensus or economic incentives to ensure reliability:
+- **Chainlink:** Uses a network of independent oracles, reputation systems, and aggregation contracts to deliver reliable data.
+- **SchellingCoin:** Participants report values; the median is taken as the correct answer, incentivizing honest reporting.
+- **Data availability oracles:** Use dedicated blockchains or networks to guarantee data can be accessed and verified.
+
+#### Oracle Client Interfaces
+
+Smart contracts interact with oracles via standardized interfaces:
+- **Oraclize (now Provable):** Provides Solidity libraries for requesting and receiving data, with support for authenticity proofs.
+- **BlockOne IQ:** Example of a financial data oracle with request/response and callback patterns.
+- **Chainlink:** Widely used interface for requesting data from decentralized oracle networks.
+
+#### Security and Best Practices
+
+- **Trust model:** Always consider who controls the oracle and what incentives or guarantees exist.
+- **Attack surface:** Oracles can be targeted by attackers seeking to manipulate contract outcomes.
+- **Decentralization:** Prefer decentralized oracles for critical applications; use multiple sources and aggregation.
+- **Verification:** Use cryptographic proofs or TEEs where possible to verify data authenticity.
+
+#### Summary
+
+Oracles are essential for connecting blockchains to the real world, enabling smart contracts to react to external events and data. However, they introduce new trust and security challenges. Careful design, decentralization, and data authentication are key to safe and reliable oracle use.
 
 ---
 
 ### Tokens
 
-A simple use case of blockchain is tokens. In this case, the data inside each block contains transactions such as transfers or minting of tokens.
+#### What is a Token?
+*See also: [Ethereum Standards and Token Types](#ethereum-standards-and-token-types) for technical details on token standards and interfaces.*
+
+A **token** is a digital representation of value, asset, or access right, managed on a blockchain. The term originally referred to physical items of limited value (e.g., arcade or bus tokens), but blockchain tokens can represent anything from currency to voting rights, assets, or digital collectibles. Unlike physical tokens, blockchain tokens are programmable, globally accessible, and can serve multiple purposes.
+
+#### How Tokens Are Used
+
+Tokens are highly versatile and can be programmed to serve many functions, often overlapping:
+- **Currency:** Digital money for trade and payments.
+- **Resource:** Representation of network resources (e.g., storage, bandwidth).
+- **Asset:** Ownership of tangible or intangible assets (e.g., gold, real estate, digital art).
+- **Access:** Rights to use a service or enter a platform.
+- **Equity:** Shares in a company or DAO.
+- **Voting:** Participation in governance or decision-making.
+- **Collectible:** Unique digital or physical items (e.g., NFTs, game items).
+- **Identity:** Digital or legal identity representation.
+- **Attestation:** Certificates or proofs (e.g., degrees, records).
+- **Utility:** Payment for or access to a service.
+
+A single token can combine several of these roles. For example, a token might grant both access and voting rights.
+
+#### Fungibility: Fungible vs Non-Fungible Tokens
+
+- **Fungible tokens:** Each unit is interchangeable (e.g., 1 USDT = 1 USDT). Most cryptocurrencies and ERC-20 tokens are fungible.
+- **Non-fungible tokens (NFTs):** Each token is unique and not interchangeable (e.g., digital art, collectibles). ERC-721 and ERC-1155 are common NFT standards.
+
+*Note:* If a token’s history can be tracked and blacklisted, its fungibility is reduced.
+
+#### Counterparty Risk
+
+When a token represents an external asset (e.g., gold, real estate), there is **counterparty risk**: the risk that the custodian or issuer fails to honor the token’s value or transfer. For tokens representing purely digital, on-chain assets, this risk is minimized, as ownership is enforced by blockchain consensus.
+
+#### Intrinsicality: Intrinsic vs Extrinsic Tokens
+
+- **Intrinsic tokens:** Represent digital assets native to the blockchain (e.g., CryptoKitties, governance tokens). No external party is needed to enforce ownership.
+- **Extrinsic tokens:** Represent off-chain assets (e.g., tokenized gold, stocks). Ownership depends on external legal or custodial arrangements.
+
+#### Utility vs Equity Tokens
+
+- **Utility tokens:** Required to access a service or platform (e.g., file storage, social networks).
+- **Equity tokens:** Represent ownership or voting rights in a project or organization (e.g., DAO shares).
+
+*Warning:* Many projects disguise equity tokens as utility tokens to avoid regulation. If a token acts like a share, regulators may treat it as such.
+
+#### Practical Considerations for Startups
+
+- Adding a token to your project increases complexity and risk. Only use a token if your application cannot function without it.
+- Utility tokens with limited use (e.g., only on your platform) may have little value and recreate the problems of physical tokens (limited liquidity, high switching costs).
+- Tokens that work across an industry or ecosystem are more likely to be valuable.
+
+#### Token Standards on Ethereum
+
+Ethereum popularized programmable tokens via smart contracts. The most common standards are:
+
+- **ERC-20:** Standard for fungible tokens. Defines functions like `totalSupply`, `balanceOf`, `transfer`, `approve`, and `transferFrom`. Widely supported by wallets and exchanges.
+- **ERC-223:** Proposed improvement to prevent accidental loss of tokens sent to contracts not designed to handle them. Not widely adopted.
+- **ERC-777:** Adds advanced features (hooks, operators, metadata) and improves safety, but adoption is limited due to complexity.
+- **ERC-721:** Standard for non-fungible tokens (NFTs). Each token is unique and tracked by a unique ID.
+- **ERC-1155:** Multi-token standard supporting both fungible and non-fungible assets in a single contract.
+
+*For a full list and technical details, see [Ethereum Standards and Token Types](#ethereum-standards-and-token-types).*
+
+**Best Practice:** Use well-audited, widely adopted standards (e.g., OpenZeppelin’s ERC-20/721 implementations) to minimize security risks.
+
+#### Key Workflows: ERC-20 Example
+
+- **transfer:** Move tokens from your account to another.
+- **approve + transferFrom:** Allow another address (e.g., a contract) to spend tokens on your behalf. Used for exchanges, crowdsales, and automated services.
+
+*Security Note:* Sending tokens directly to a contract that does not support them can result in permanent loss. Use standards and interfaces that prevent this.
+
+#### Extending Token Standards
+
+Projects often extend token contracts with features like:
+- Minting/burning (changing supply)
+- Owner/admin controls (blacklisting, whitelisting)
+- Crowdfunding mechanisms
+- Recovery functions
+
+*Warning:* Every added feature increases the attack surface. Keep contracts as simple as possible and use audited libraries.
+
+#### Issues and User Experience
+
+- Tokens are not native to Ethereum; they are managed by smart contracts. Wallets must explicitly support each token contract.
+- To send tokens, users must pay gas in ETH, which can confuse new users.
+- Many tokens are spam or have little value; wallets may show unwanted tokens.
+
+#### Real-World Example: Token Loss
+
+If you send ERC-20 tokens to a contract address that does not implement the required interface, those tokens are lost forever. Always verify the recipient can handle the token type.
+
+*Tip: When tokenizing off-chain assets, use decentralized oracles (see [Oracles](#oracles)) to verify collateralization and market data, reducing counterparty risk and increasing transparency.*
+
+#### Security by Maturity
+
+Use "battle-tested" implementations (e.g., OpenZeppelin) rather than writing your own from scratch. Extending standards is possible, but every line of code adds risk.
+
+#### Summary
+
+Tokens are a foundational concept in blockchain, enabling digital assets, programmable money, and new forms of ownership and governance. Understanding their types, standards, and risks is essential for anyone building or using blockchain applications.
 
 ---
 
-### Asset Tokenization
+#### Asset Tokenization
 
 Asset tokenization is a revolutionary way of owning an asset via smart contracts on the blockchain, allowing individuals to have verifiable ownership over digital tokens that represent real-world or digital assets. Major institutions such as BlackRock, Deloitte, and Boston Consulting Group have studied tokenization projects across various asset classes and concluded that this technology has the potential to disrupt multiple industries. Asset tokenization remains one of the most popular and practical uses of blockchain technology.
 
@@ -120,7 +283,7 @@ Asset tokenization is a revolutionary way of owning an asset via smart contracts
 
 By enabling fractional ownership, increased liquidity, and transparent transfer of assets, tokenization is transforming how value is created, managed, and exchanged in the digital economy.
 
-#### How Does Asset Tokenization Work?
+**How Does Asset Tokenization Work?**
 
 Asset tokenization streamlines the entire lifecycle of an asset—origination, distribution, trading, clearing, settlement, and safekeeping—by consolidating these processes onto a single blockchain-based layer. This integration increases efficiency, transparency, and security, as blockchain records are immutable and resistant to tampering.
 
@@ -133,7 +296,7 @@ Asset tokenization streamlines the entire lifecycle of an asset—origination, d
 
 The decentralized nature of blockchain ensures that asset ownership records are transparent, immutable, and accessible, giving users greater confidence in the integrity and security of tokenized assets.
 
-#### Real-World Example: PAXG (Tokenized Gold)
+**Real-World Example: PAXG (Tokenized Gold)**
 
 A prominent example of asset tokenization is [PAXG (Pax Gold)](https://www.paxos.com/pax-gold), a tokenized gold asset listed on Binance and other major exchanges. Each PAXG token is fully backed by physical gold held in reserve, ensuring that the total supply of tokens always matches the amount of gold owned by holders (fully hedged). 
 
@@ -197,7 +360,7 @@ Both account types can:
 #### Account Structure
 
 Each Ethereum account has four fields:
-- **nonce:** Number of transactions sent (EOA) or contracts created (contract account); protects against replay attacks.
+- **nonce:** Number of transactions sent (EOA) or contracts created (contract account); protects against replay attacks. *The nonce ensures each transaction is unique and prevents double-spending or replay attacks.*
 - **balance:** Amount of wei (1 ETH = 1e18 wei) owned by the address.
 - **codeHash:** Hash of the account's code (for contracts) or empty for EOAs.
 - **storageRoot:** Hash of the root node of a Merkle Patricia trie encoding the account's storage contents.
@@ -267,7 +430,7 @@ Ethereum supports multiple transaction types:
 
 #### Gas and Fees
 
-- **Gas** is the computational cost to process a transaction.
+- **Gas** is the computational cost to process a transaction. *Every operation in the EVM consumes gas; more complex operations cost more.*
 - **GasLimit** sets the maximum gas allowed.
 - **maxFeePerGas** and **maxPriorityFeePerGas** determine the transaction fee.
 - Unused gas is refunded; the base fee is burned, and the validator receives the tip.
@@ -345,6 +508,95 @@ The Ethereum stack consists of several layers that together enable decentralized
 - The user experience is similar to traditional apps, often without users knowing blockchain is involved.
 
 This layered architecture allows developers to build robust, decentralized applications while abstracting away much of the underlying complexity.
+
+---
+
+### The Ethereum Virtual Machine (EVM)
+
+#### What is the EVM?
+
+The **Ethereum Virtual Machine (EVM)** is the core computation engine of Ethereum. It is a global, decentralized computer that executes smart contracts and updates the Ethereum state. Every node in the Ethereum network runs the EVM to maintain consensus.
+
+- The EVM is a stack-based, quasi–Turing-complete virtual machine.
+- It executes smart contract bytecode, manages contract storage, and enforces gas limits to prevent infinite loops.
+- Each smart contract runs in its own isolated environment, with access to its own storage, memory, and code.
+
+#### EVM Architecture
+
+- **Stack:** All computations use a 256-bit stack for operands and results.
+- **Memory:** Volatile, zero-initialized memory for temporary data during execution.
+- **Storage:** Persistent, contract-specific storage for long-term data.
+- **Program code (ROM):** Immutable bytecode loaded at contract creation.
+- **Environment variables:** Execution context (block info, transaction data, sender, value, etc.).
+
+#### Comparison with Other Virtual Machines
+
+- The EVM is similar to the Java Virtual Machine (JVM) or .NET CLR, but is focused solely on computation and storage for smart contracts.
+- Unlike traditional VMs, the EVM has no system interface, hardware access, or scheduling—execution order is determined externally by transaction ordering in blocks.
+- The EVM is single-threaded and deterministic.
+
+#### EVM Instruction Set (Opcodes)
+
+The EVM supports a rich set of opcodes, grouped into categories:
+- **Arithmetic:** ADD, MUL, SUB, DIV, MOD, EXP, etc.
+- **Stack/Memory/Storage:** PUSH, POP, MLOAD, MSTORE, SLOAD, SSTORE, DUP, SWAP, etc.
+- **Control flow:** JUMP, JUMPI, STOP, RETURN, REVERT, SELFDESTRUCT.
+- **Logic/Comparison:** LT, GT, EQ, AND, OR, NOT, ISZERO, etc.
+- **Environment/Block info:** ADDRESS, BALANCE, ORIGIN, CALLER, CALLVALUE, BLOCKHASH, TIMESTAMP, NUMBER, GAS, GASPRICE, etc.
+- **System:** LOG, CREATE, CALL, DELEGATECALL, STATICCALL.
+
+All operations are performed on the stack, and most opcodes consume or produce stack items.
+
+#### State and Execution Context
+
+- The EVM updates the Ethereum world state by executing transactions and contract calls.
+- Each account has a balance, nonce, storage, and (for contracts) code.
+- Execution is sandboxed: if a transaction fails (e.g., out of gas), all state changes are reverted except for gas spent.
+
+#### Compiling Solidity to EVM Bytecode
+
+- High-level languages like Solidity are compiled to EVM bytecode.
+- The `solc` compiler can output:
+  - **Opcodes:** Human-readable instruction list (`--opcodes`)
+  - **Assembly:** Annotated low-level code (`--asm`)
+  - **Bytecode:** Machine-readable hex (`--bin`)
+- Example: `solc -o build --bin Example.sol`
+
+#### Contract Deployment Code vs Runtime Code
+
+- **Deployment bytecode:** Contains constructor logic and initialization code; used when creating a contract.
+- **Runtime bytecode:** The actual code stored on-chain and executed for contract calls.
+- The deployment process runs the constructor, sets up storage, and returns the runtime bytecode.
+
+#### Disassembling and Analyzing Bytecode
+
+- Tools like Porosity, Ethersplay, and IDA-Evm can disassemble EVM bytecode for analysis.
+- Understanding bytecode helps with security audits and debugging.
+
+#### Turing Completeness and Gas
+
+- The EVM is quasi–Turing-complete: it can run any program, but execution is limited by gas.
+- **Gas** is the unit of computation and storage cost in Ethereum.
+- Every opcode has a fixed gas cost; more complex operations (e.g., hashing, storage) cost more.
+- Gas prevents infinite loops and denial-of-service attacks.
+
+#### Gas Accounting and Block Gas Limit
+
+- Each transaction specifies a gas limit and gas price.
+- If execution runs out of gas, it is reverted, but gas spent is not refunded.
+- Unused gas is refunded to the sender.
+- The **block gas limit** restricts the total gas used by all transactions in a block; miners can vote to adjust it.
+- Some operations (e.g., deleting storage, selfdestruct) refund gas to incentivize cleanup.
+
+#### Security and Best Practices
+
+- Always test and audit smart contracts, as EVM bytecode is low-level and errors can be costly.
+- Use high-level languages and audited libraries when possible.
+- Understand gas costs to avoid unexpected failures or excessive fees.
+
+#### Summary
+
+The EVM is the foundation of Ethereum's programmability, enabling decentralized, trustless computation. Its stack-based, deterministic design, combined with gas metering, ensures security and resource fairness. Understanding the EVM is essential for smart contract developers and anyone interested in Ethereum's inner workings.
 
 ---
 
@@ -438,3 +690,37 @@ Ethereum's architecture allows for the creation of complex, decentralized system
 ## Conclusion
 
 <!-- Add summary and final thoughts here -->
+
+---
+
+## References
+
+- [Anders Brownworth: Blockchain Demo](https://andersbrownworth.com/blockchain/)  
+  Interactive visual demo of blockchain concepts.
+
+- [Blockchain 101 - A Visual Demo (YouTube)](https://www.youtube.com/watch?v=_160oMzblY8)  
+  Video explanation of blockchain fundamentals.
+
+- [anders94/blockchain-demo (GitHub)](https://github.com/anders94/blockchain-demo)  
+  Source code for the blockchain visual demo.
+
+- [Chainlink: Asset Tokenization Guide](https://chain.link/education/asset-tokenization#:~:text=Digital%20asset%20tokenization%20is%20the,%2C%20and%20non%2Dfungible%20assets.)  
+  Educational resource on digital asset tokenization.
+
+- [Ethereum.org: Token Standards Documentation](https://ethereum.org/en/developers/docs/standards/tokens/)  
+  Official documentation for Ethereum token standards (ERC-20, ERC-721, etc.).
+
+- [OpenZeppelin Wizard](https://wizard.openzeppelin.com/)  
+  Tool for generating secure smart contract code using OpenZeppelin libraries.
+
+- [Uniswap Whitepaper (PDF)](https://app.uniswap.org/whitepaper.pdf)  
+  Technical whitepaper for the Uniswap decentralized exchange protocol.
+
+- [Uniswap v2 Core (GitHub)](https://github.com/Uniswap/v2-core)  
+  Source code for Uniswap v2 core smart contracts.
+
+- [ethereumbook/ethereumbook (GitHub)](https://github.com/ethereumbook/ethereumbook?tab=readme-ov-file)  
+  "Mastering Ethereum" open-source book and code examples.
+
+- [Paxos: Pax Gold (PAXG)](https://www.paxos.com/pax-gold)  
+  Information about the PAXG tokenized gold asset.
