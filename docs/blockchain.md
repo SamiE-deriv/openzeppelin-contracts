@@ -62,6 +62,9 @@ A blockchain is a distributed ledger composed of a sequence of blocks, each cont
 
 ### Hashes
 
+![Block Hash Structure](images/block_hash_structure.png)
+*Figure: Structure of a blockchain block, showing how hashes link blocks together and ensure integrity.*
+
 A hash is a digital fingerprint of data. If you change anything in the data, the hash changes, but the hash will always have the same length. Hashes are used to ensure data integrity.
 
 ---
@@ -94,6 +97,9 @@ Instead of a single blockchain, there are many copies (peers: A, B, C, etc.). If
 ---
 
 ### Oracles
+
+![Oracle Framework](images/oracle_framework.png)
+*Figure: Example of an oracle framework connecting off-chain data to smart contracts.*
 
 #### What is an Oracle?
 
@@ -232,6 +238,9 @@ Ethereum popularized programmable tokens via smart contracts. The most common st
 **Best Practice:** Use well-audited, widely adopted standards (e.g., OpenZeppelin’s ERC-20/721 implementations) to minimize security risks.
 
 #### Key Workflows: ERC-20 Example
+
+![ERC-20 Two-Step Approve](images/erc20_approve_transfer.png)
+*Figure: The two-step approve and transferFrom workflow for ERC-20 token transfers.*
 
 - **transfer:** Move tokens from your account to another.
 - **approve + transferFrom:** Allow another address (e.g., a contract) to spend tokens on your behalf. Used for exchanges, crowdsales, and automated services.
@@ -523,6 +532,9 @@ The **Ethereum Virtual Machine (EVM)** is the core computation engine of Ethereu
 - Each smart contract runs in its own isolated environment, with access to its own storage, memory, and code.
 
 #### EVM Architecture
+
+![EVM Architecture](images/evm_architecture.png)
+*Figure: High-level architecture of the Ethereum Virtual Machine (EVM).*
 
 - **Stack:** All computations use a 256-bit stack for operands and results.
 - **Memory:** Volatile, zero-initialized memory for temporary data during execution.
