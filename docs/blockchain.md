@@ -687,9 +687,9 @@ Ethereum's architecture allows for the creation of complex, decentralized system
 
 ---
 
-## Conclusion
+## Summary
 
-<!-- Add summary and final thoughts here -->
+The Deriv tokenization project aims to implement tokenized accounts, tokenized assets, and the Deriv coin to streamline asset management and enable new financial interactions. Key strengths include increased transparency, programmability, and the ability to fractionalize ownership, which can improve liquidity and accessibility. Tokenized accounts and assets may simplify transfers and support more flexible financial products. However, challenges remain: regulatory uncertainty, technical complexity, and the need for robust security measures can slow adoption. Integrating real-world assets introduces counterparty and legal risks, while user experience and interoperability with existing systems require careful design. The success of Deriv will depend on addressing these issues while leveraging the core benefits of blockchain-based tokenization.
 
 ---
 
